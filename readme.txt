@@ -27,5 +27,9 @@ Additional options:
 3. Check and configure the plugin settings through the \'Block Spammers\' menu in WordPress settings
 
 == Changelog ==
+= 0.2 =
+* Enable translations
+* Add Estonian translation
+
 = 0.1 =
 * Initial release

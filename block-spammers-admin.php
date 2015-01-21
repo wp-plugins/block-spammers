@@ -135,7 +135,7 @@ class WBSSettings
 
 		add_settings_field(
 			'wbs-blacklist-keys',
-			__('Bad words'),
+			__('Bad words', 'wbs'),
 			array($this, 'wbs_blacklist_keys_callback'),
 			'wbs-admin',
 			'wbs-manual-blocking'
@@ -227,7 +227,7 @@ class WBSSettings
 	// Textarea for manual blocking patterns
 	public function wbs_manual_blocking_callback()
 	{
-		printf('<fieldset><p><label for="wbs-manual-blocking-textarea">%s</label></p><textarea id="wbs-manual-blocking-textarea" name="wbs_options[wbs-manual-blocking-textarea]" cols="50" rows="10" class="large-text code">%s</textarea></fieldset>', __('Use * for wildcards and start each entry on a new line.<br /><p>Examples:<br /><strong>&raquo;</strong> 192.168.1.100<br /><strong>&raquo;</strong> 192.168.1.*<br /><strong>&raquo;</strong> 192.168.*.*</p>', 'wbs'), isset($this->options['wbs-manual-blocking-textarea']) ? esc_textarea($this->options['wbs-manual-blocking-textarea']) : '');
+		printf('<fieldset><p><label for="wbs-manual-blocking-textarea">%s<br /><strong>&raquo;</strong> 192.168.1.100<br /><strong>&raquo;</strong> 192.168.1.*<br /><strong>&raquo;</strong> 192.168.*.*</p></label></p><textarea id="wbs-manual-blocking-textarea" name="wbs_options[wbs-manual-blocking-textarea]" cols="50" rows="10" class="large-text code">%s</textarea></fieldset>', __('Use * for wildcards and start each entry on a new line.<br /><p>Examples:', 'wbs'), isset($this->options['wbs-manual-blocking-textarea']) ? esc_textarea($this->options['wbs-manual-blocking-textarea']) : '');
 	}
 
 	// Textarea for blacklisted words

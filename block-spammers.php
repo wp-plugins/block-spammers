@@ -4,7 +4,9 @@ Plugin Name: Block Spammers
 Plugin URI: https://github.com/sander85/block-spammers
 Description: Block spammers from submitting comments, by IPs or by bad words.
 Author: Sander Lepik
-Version: 0.1
+Version: 0.2
+Text Domain: wbs
+Domain Path: /languages/
 Author URI: https://sander85.eu
 License: CC0
 */
@@ -21,6 +23,14 @@ work. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 defined('ABSPATH') or die("No script kiddies please!");
 
 add_filter('preprocess_comment', 'wbs_process_comment', 1);
+add_action('init', 'wbs_load_textdomain');
+
+
+// Initialize translations
+function wbs_load_textdomain()
+{
+	load_plugin_textdomain('wbs', false, dirname(plugin_basename(__FILE__)) . '/languages');
+}
 
 function wbs_get_ip_address()
 {
