@@ -10,6 +10,7 @@ Additional options:
 
 *   If comment contains bad words, add the spammers IP into the blacklist.
 *   When deleting spam, add IPs of spam comments into the blacklist.
+*   Similar entries in the blacklist are merged automatically.
 
 ## Installation ##
 1.  Upload block-spammers to the /wp-content/plugins/ directory

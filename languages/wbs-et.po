@@ -1,60 +1,68 @@
 # This file is distributed under the same license as the Block Spammers package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Block Spammers 0.1\n"
+"Project-Id-Version: Block Spammers 0.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/block-spammers\n"
-"POT-Creation-Date: 2015-01-21 10:41:54+00:00\n"
+"POT-Creation-Date: 2015-01-24 23:33:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-01-21 13:13+0200\n"
+"PO-Revision-Date: 2015-01-25 01:45+0200\n"
 "Last-Translator: Sander Lepik <sander@lepik.eu>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#. #-#-#-#-#  wbs.pot (Block Spammers 0.1)  #-#-#-#-#
+#. #-#-#-#-#  wbs.pot (Block Spammers 0.3)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: block-spammers-admin.php:30 block-spammers-admin.php:31
-#: block-spammers-admin.php:47
+#: block-spammers-admin.php:57
 msgid "Block Spammers"
 msgstr "Spämmijate blokkimine"
 
-#: block-spammers-admin.php:84
+#: block-spammers-admin.php:58
+msgid "The number of comments this plugin has blocked: <strong>%s</strong>"
+msgstr "Selle plugina poolt blokitud kommentaaride arv: <strong>%s</strong>"
+
+#: block-spammers-admin.php:95
 msgid "General settings"
 msgstr "Üldseaded"
 
-#: block-spammers-admin.php:91
+#: block-spammers-admin.php:102
 msgid "Manual blocking"
 msgstr "Käsitsi blokkimine"
 
-#: block-spammers-admin.php:98
+#: block-spammers-admin.php:109
 msgid "Block IPs of spam comments"
 msgstr "Spämm-kommentaaride IPde blokkimine"
 
-#: block-spammers-admin.php:106
+#: block-spammers-admin.php:117
 msgid "Block bad words"
 msgstr "Pahade sõnade blokkimine"
 
-#: block-spammers-admin.php:114
+#: block-spammers-admin.php:125
 msgid "Deleting spam"
 msgstr "Spämmi kustutamine"
 
-#: block-spammers-admin.php:122
+#: block-spammers-admin.php:133
+msgid "Merge similar entries"
+msgstr "Sarnaste kirjete liitmine"
+
+#: block-spammers-admin.php:141
 msgid "Message for spammers"
 msgstr "Sõnum spämmijatele"
 
-#: block-spammers-admin.php:130
+#: block-spammers-admin.php:149
 msgid "Block IPs"
 msgstr "IPde blokkimine"
 
-#: block-spammers-admin.php:138
+#: block-spammers-admin.php:157
 msgid "Bad words"
 msgstr "Pahad sõnad"
 
-#: block-spammers-admin.php:197
+#: block-spammers-admin.php:250
 msgid "In this section you can block spammers manually."
 msgstr "Selles osas saad spämmijaid käsitsi blokkida."
 
-#: block-spammers-admin.php:203
+#: block-spammers-admin.php:256
 msgid ""
 "Block comments from IPs that have posted spam before<br />(IPs will be "
 "obtained from comments that are marked as spam)"
@@ -62,29 +70,45 @@ msgstr ""
 "Varasemalt spämmi postitanud IPd blokitakse<br />(kasutatakse spämmiks "
 "märgitud kommentaaride IP-aadresse)"
 
-#: block-spammers-admin.php:209
+#: block-spammers-admin.php:262
 msgid "Block comments that contain blacklisted words"
 msgstr "Pahasid sõnu sisaldavad kommentaarid blokitakse"
 
-#: block-spammers-admin.php:212
+#: block-spammers-admin.php:265
 msgid "Add IPs of those comments into the blacklist"
 msgstr "Selliste kommentaaride postitajate IPd lisatakse musta nimekirja"
 
-#: block-spammers-admin.php:218
+#: block-spammers-admin.php:271
 msgid "When deleting spam, add IPs of spam comments into the blacklist"
 msgstr "Spämmi kustutamisel lisatakse spämmijate IPd musta nimekirja"
 
-#: block-spammers-admin.php:224 block-spammers.php:96
+#: block-spammers-admin.php:281
+msgid ""
+"If %1$s or more IPs have the first %2$s octets matching, then merge them "
+"into wildcarded entry"
+msgstr ""
+"Kui %1$s või enama IP esimesed %2$s oktetti on samad, siis liidetakse "
+"need IPd metamärgistatud kirjeks"
+
+#: block-spammers-admin.php:281
+msgid ""
+"Example: 192.168.1.100, 192.168.1.101 and 192.168.2.100 will be merged into "
+"192.168.*.*"
+msgstr ""
+"Näide: 192.168.1.100, 192.168.1.101 ja 192.168.2.100 liidetakse kirjeks "
+"192.168.*.*"
+
+#: block-spammers-admin.php:287 block-spammers.php:111
 msgid "You are banned from commenting!"
 msgstr "You are banned from commenting! / Sinu kommentaar on bännitud!"
 
-#: block-spammers-admin.php:230
+#: block-spammers-admin.php:293
 msgid ""
 "Use * for wildcards and start each entry on a new line.<br /><p>Examples:"
 msgstr ""
 "Lisa iga kirje eraldi reale ning metamärgina kasuta *.<br /><p>Näited:"
 
-#: block-spammers-admin.php:236
+#: block-spammers-admin.php:299
 msgid "This is the same option as "
 msgstr "Sama asja leiab ka siit: "
 

@@ -41,10 +41,21 @@ class WBSSettings
 		// Set class property
 		$this->options = get_option('wbs_options');
 		$this->blacklisted_words = get_option('blacklist_keys');
+
+		// Blocked comments info
+		if(isset($this->options['blocked_comments_count']))
+		{
+			$blocked_comments_count = $this->options['blocked_comments_count'];
+		}
+		else
+		{
+			$blocked_comments_count = 0;
+		}
 		?>
 		<div class="wrap">
 			<?php screen_icon(); ?>
 			<h2><?php echo __('Block Spammers', 'wbs'); ?></h2>
+			<p><?php printf(__('The number of comments this plugin has blocked: <strong>%s</strong>', 'wbs'), $blocked_comments_count); ?></p>
 			<form method="post" action="options.php">
 			<?php
 				// Hidden settings
@@ -118,6 +129,14 @@ class WBSSettings
 		);
 
 		add_settings_field(
+			'wbs-merge-ips',
+			__('Merge similar entries', 'wbs'),
+			array($this, 'wbs_merge_ips_callback'),
+			'wbs-admin',
+			'wbs-general-settings'
+		);
+
+		add_settings_field(
 			'wbs-message-to-spammers',
 			__('Message for spammers', 'wbs'),
 			array($this, 'message_to_spammers_callback'),
@@ -167,6 +186,29 @@ class WBSSettings
 			$new_input['wbs-add-to-blacklist-during-deleting'] = $input['wbs-add-to-blacklist-during-deleting'];
 		}
 
+		if(isset($input['wbs-merge-ips-checkbox']) && $input['wbs-merge-ips-checkbox'])
+		{
+			$new_input['wbs-merge-ips-checkbox'] = $input['wbs-merge-ips-checkbox'];
+			if(isset($input['wbs-merge-ips-octets']))
+			{
+				$new_input['wbs-merge-ips-octets'] = absint($input['wbs-merge-ips-octets']);
+				$new_input['wbs-merge-ips-octets'] = $new_input['wbs-merge-ips-octets'] > 3 ? 3 : $new_input['wbs-merge-ips-octets'];
+			}
+			else
+			{
+				$new_input['wbs-merge-ips-octets'] = 2;
+			}
+
+			if(isset($input['wbs-merge-ips-count']))
+			{
+				$new_input['wbs-merge-ips-count'] = absint($input['wbs-merge-ips-count']);
+			}
+			else
+			{
+				$new_input['wbs-merge-ips-count'] = 3;
+			}
+		}
+
 		if(isset($input['wbs-message-to-spammers']))
 		{
 			$new_input['wbs-message-to-spammers'] = sanitize_text_field($input['wbs-message-to-spammers']);
@@ -174,8 +216,12 @@ class WBSSettings
 
 		if(isset($input['wbs-manual-blocking-textarea']))
 		{
-			// Sort the list first
+			// Sort the list first and remove similar IPs if requested
 			$ips_to_sort = array_unique(array_map('trim', explode("\n", $input['wbs-manual-blocking-textarea'])));
+			if(isset($new_input['wbs-merge-ips-checkbox']) && $new_input['wbs-merge-ips-checkbox'])
+			{
+				$ips_to_sort = self::wbs_merge_ips($ips_to_sort, $new_input['wbs-merge-ips-count'], $new_input['wbs-merge-ips-octets']);
+			}
 			natsort($ips_to_sort);
 
 			$new_input['wbs-manual-blocking-textarea'] = implode("\n", array_map('sanitize_text_field', $ips_to_sort));
@@ -186,6 +232,13 @@ class WBSSettings
 		{
 			$bad_words = implode("\n", array_unique(array_filter(array_map('trim', explode("\n", $input['wbs-block-bad-words-textarea'])))));
 			update_option('blacklist_keys', $bad_words);
+		}
+
+		// Keep blocked comments count
+		$wbs_options = get_option('wbs_options');
+		if(isset($wbs_options['blocked_comments_count']))
+		{
+			$new_input['blocked_comments_count'] = absint($wbs_options['blocked_comments_count']);
 		}
 
 		return $new_input;
@@ -216,6 +269,16 @@ class WBSSettings
 	public function wbs_add_to_blacklist_during_deleting_callback()
 	{
 		printf('<fieldset><label><input type="checkbox" name="wbs_options[wbs-add-to-blacklist-during-deleting]" value="1" %s> %s</label></fieldset>', checked(isset($this->options['wbs-add-to-blacklist-during-deleting']), true, false), __('When deleting spam, add IPs of spam comments into the blacklist', 'wbs'));
+	}
+
+	// Option for merging similar IPs
+	public function wbs_merge_ips_callback()
+	{
+		$count = isset($this->options['wbs-merge-ips-count']) ? $this->options['wbs-merge-ips-count'] : 3;
+		$count = '<input type="text" name="wbs_options[wbs-merge-ips-count]" style="width:2em;text-align:center" value="' . $count . '">';
+		$octets = isset($this->options['wbs-merge-ips-octets']) ? $this->options['wbs-merge-ips-octets'] : 2;
+		$octets = '<input type="text" name="wbs_options[wbs-merge-ips-octets]" style="width:2em;text-align:center" value="' . $octets . '">';
+		printf('<fieldset><input type="checkbox" name="wbs_options[wbs-merge-ips-checkbox]" value="1" %3$s> ' . __('If %1$s or more IPs have the first %2$s octets matching, then merge them into wildcarded entry', 'wbs') . '<p class="description">' . __('Example: 192.168.1.100, 192.168.1.101 and 192.168.2.100 will be merged into 192.168.*.*', 'wbs') . '</p></fieldset>', $count, $octets, checked(isset($this->options['wbs-merge-ips-checkbox']), true, false));
 	}
 
 	// Message for spammers
@@ -249,11 +312,73 @@ class WBSSettings
 				$blocked_ips = array_map('trim', explode("\n", $wbs_options['wbs-manual-blocking-textarea']));
 				$blocked_ips[] = $spam_ip->comment_author_IP;
 				$blocked_ips = array_unique($blocked_ips);
+				if(isset($wbs_options['wbs-merge-ips-checkbox']))
+				{
+					$blocked_ips = self::wbs_merge_ips($blocked_ips, $wbs_options['wbs-merge-ips-count'], $wbs_options['wbs-merge-ips-octets']);
+				}
         	                natsort($blocked_ips);
 				$wbs_options['wbs-manual-blocking-textarea'] = implode("\n", $blocked_ips);
 				update_option('wbs_options', $wbs_options);
 			}
 		}
+	}
+
+	// Function to merge similar comments
+	public function wbs_merge_ips($ips, $count, $octets)
+	{
+		$new_ips = $counter = array();
+
+		foreach($ips as $ip)
+		{
+			$key = array();
+			$o = explode(".", $ip);
+			for($k = 0; $k < $octets; $k++)
+			{
+				$key[] = $o[$k];
+			}
+			$key = implode(".", $key);
+			if(array_key_exists($key, $counter))
+			{
+				$counter[$key]++;
+			}
+			else
+			{
+				$counter[$key] = 1;
+			}
+		}
+
+		foreach($ips as $ip)
+		{
+			$key = array();
+			$o = explode(".", $ip);
+			for($k = 0; $k < $octets; $k++)
+			{
+				$key[] = $o[$k];
+			}
+			$key = implode(".", $key);
+			if(substr($ip, 0, strlen($key)) == $key)
+			{
+				if($counter[$key] < $count)
+				{
+					$new_ips[] = $ip;
+				}
+			}
+		}
+
+		foreach($counter as $k => $c)
+		{
+			if($c >= $count)
+			{
+				$entry = $k;
+				for($o = 1; $o <= 4 - $octets; $o++)
+				{
+					$entry .= '.*';
+				}
+				$new_ips[] = $entry;
+			}
+		}
+
+		return $new_ips;
 	}
 }
 
